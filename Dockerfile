@@ -4,6 +4,15 @@ FROM alpine:latest
 RUN apk add --update git bash wget openssl groff less python py-pip jq perl openssh make
 RUN pip install --upgrade pip
 RUN pip install --quiet awscli
+RUN apk add --no-cache \
+    curl \
+    jq \
+    openrc \
+    py-pip \
+    docker \
+ && pip install \
+    awscli
+RUN rc-update add docker boot
 
 # https://github.com/hashicorp/docker-hub-images/blob/master/packer/Dockerfile-light
 ENV PACKER_VERSION=1.3.3
