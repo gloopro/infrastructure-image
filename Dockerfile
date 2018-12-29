@@ -1,10 +1,16 @@
 
-FROM alpine:latest
 
-ENV BUILD_PACKAGES bash curl-dev ruby-dev build-base
-ENV RUBY_PACKAGES ruby ruby-io-console ruby-bundler
+FROM ruby:alpine
 
-RUN apk add --update git bash wget openssl groff less python py-pip jq perl openssh make ruby ruby-bundler
+ARG VERSION=3.2.6
+ARG GEM_SOURCE=https://rubygems.org
+
+RUN mkdir -p /share
+RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client && \
+    gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec && \
+    apk del build-base
+
+RUN apk add --update git ruby ruby-io-console ruby-bundler bash wget openssl groff less python py-pip jq perl openssh make bash curl-dev ruby-dev build-base
 RUN pip install --upgrade pip
 RUN pip install --quiet awscli
 RUN apk add --no-cache \
@@ -16,14 +22,6 @@ RUN apk add --no-cache \
  && pip install \
     awscli
 RUN rc-update add docker boot
-
-ARG VERSION=3.2.6
-ARG GEM_SOURCE=https://rubygems.org
-
-RUN mkdir -p /share
-RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client && \
-    gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec && \
-    apk del build-base
 
 RUN apk update && \
     apk upgrade && \
@@ -56,4 +54,7 @@ RUN unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /bin
 RUN rm -f terraform_${TERRAFORM_VERSION}_linux_amd64.zip
 
 # irrelevant
-CMD ["/bin/ash"]
+ENTRYPOINT ["inspec"]
+CMD ["help"]
+VOLUME ["/share"]
+WORKDIR /share
