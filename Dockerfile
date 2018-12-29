@@ -1,6 +1,9 @@
 
 FROM alpine:latest
 
+ENV BUILD_PACKAGES bash curl-dev ruby-dev build-base
+ENV RUBY_PACKAGES ruby ruby-io-console ruby-bundler
+
 RUN apk add --update git bash wget openssl groff less python py-pip jq perl openssh make ruby ruby-bundler
 RUN pip install --upgrade pip
 RUN pip install --quiet awscli
@@ -14,43 +17,12 @@ RUN apk add --no-cache \
     awscli
 RUN rc-update add docker boot
 
-ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=1
-
-ADD gemrc /root/.gemrc
-
-RUN apk update \
-&& apk add ruby \
-           ruby-bigdecimal \
-           ruby-bundler \
-           ruby-io-console \
-           ruby-irb \
-           ca-certificates \
-           libressl \
-           less \
-&& apk add --virtual build-dependencies \
-           build-base \
-           ruby-dev \
-           libressl-dev \
-\
-&& bundle config build.nokogiri --use-system-libraries \
-&& bundle config git.allow_insecure true \
-&& gem install json --no-rdoc --no-ri \
-\
-&& gem cleanup \
-&& apk del build-dependencies \
-&& rm -rf /usr/lib/ruby/gems/*/cache/* \
-          /var/cache/apk/* \
-          /tmp/* \
-          /var/tmp/*
-
-ARG VERSION=3.2.6
-ARG GEM_SOURCE=https://rubygems.org
-
-RUN mkdir -p /share
-RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client && \
-    gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec && \
-    apk del build-base
-
+RUN apk update && \
+    apk upgrade && \
+    apk add $BUILD_PACKAGES && \
+    apk add $RUBY_PACKAGES && \
+    rm -rf /var/cache/apk/*
+    
 # https://github.com/hashicorp/docker-hub-images/blob/master/packer/Dockerfile-light
 ENV PACKER_VERSION=1.3.3
 ENV PACKER_SHA256SUM=efa311336db17c0709d5069509c34c35f0d59c63dfb05f61d4572c5a26b563ea
