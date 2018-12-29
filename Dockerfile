@@ -17,6 +17,11 @@ RUN apk add --no-cache \
     awscli
 RUN rc-update add docker boot
 
+RUN mkdir -p /share
+RUN apk add --update build-base libxml2-dev libffi-dev git openssh-client && \
+    gem install --no-document --source ${GEM_SOURCE} --version ${VERSION} inspec && \
+    apk del build-base
+
 RUN apk update && \
     apk upgrade && \
     apk add $BUILD_PACKAGES && \
