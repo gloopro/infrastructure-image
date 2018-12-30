@@ -3,6 +3,13 @@ FROM alpine:latest
 RUN apk add --update git ruby ruby-io-console ruby-bundler bash wget openssl groff less python py-pip jq perl openssh make bash curl-dev ruby-dev build-base
 RUN pip install --upgrade pip
 RUN pip install --quiet awscli
+RUN set -xe \
+    && apk add --no-cache --purge -uU sudo curl ca-certificates openssh-client \
+    && apk --update add --virtual .build-dependencies python-dev libffi-dev openssl-dev build-base \
+    && pip install --no-cache --upgrade ansible \
+    && apk del --purge .build-dependencies \
+    && mkdir -p /etc/ansible \
+    && echo 'localhost' > /etc/ansible/hosts
 RUN apk add --no-cache \
     curl \
     jq \
