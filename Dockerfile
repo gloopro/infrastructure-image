@@ -1,6 +1,6 @@
 FROM alpine:latest
 
-RUN apk add --update sudo curl .build-dependencies python-dev libffi-dev build-baseca-certificates openssh-client ansible git ruby ruby-io-console ruby-bundler bash wget openssl groff less python py-pip jq perl openssh make bash curl-dev ruby-dev build-base
+RUN apk add --update sudo curl python-dev libffi-dev build-base ca-certificates openssh-client ansible git ruby ruby-io-console ruby-bundler bash wget openssl groff less python py-pip jq perl openssh make bash curl-dev ruby-dev build-base
 RUN pip install --upgrade pip
 RUN set -xe \
     && mkdir -p /etc/ansible \
