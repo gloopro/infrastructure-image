@@ -5,7 +5,7 @@ RUN pip install --upgrade pip
 RUN pip install --quiet awscli
 RUN set -xe \
     && apk add --no-cache --purge -uU sudo curl ca-certificates openssh-client \
-    && apk --update add --virtual .build-dependencies python-dev libffi-dev openssl-dev build-base \
+    && apk --update add --virtual .build-dependencies python-dev libffi-dev build-base \
     && pip install --no-cache --upgrade ansible \
     && apk del --purge .build-dependencies \
     && mkdir -p /etc/ansible \
